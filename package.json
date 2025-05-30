@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start -p $PORT",
     "lint": "next lint",
-    "heroku-postbuild": "npm install --legacy-peer-deps && npm run build"
+    "heroku-postbuild": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --only=dev && npm run build"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
