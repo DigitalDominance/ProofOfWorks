@@ -2,10 +2,10 @@
 
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { useAccount, useDisconnect, useEnsName, useBalance } from "wagmi"
-import { Button } from "@/components/ui/button"
+import { Button, type ButtonProps } from "@/components/ui/button" // Import ButtonProps
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut, Wallet, Copy, Check, ExternalLink } from "lucide-react"
-import { chains, kaspaEVMTestnet } from "@/lib/web3modal-config" // Import chains
+import { chains, kaspaEVMTestnet } from "@/lib/web3modal-config"
 import { useState, useEffect } from "react"
 import {
   DropdownMenu,
@@ -23,7 +23,11 @@ function truncateAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
-export function ConnectWallet() {
+interface ConnectWalletProps {
+  buttonSize?: ButtonProps["size"] // Add buttonSize prop
+}
+
+export function ConnectWallet({ buttonSize = "default" }: ConnectWalletProps) {
   const { open } = useWeb3Modal()
   const { address, isConnected, chainId, connector } = useAccount()
   const { disconnect } = useDisconnect()
@@ -67,9 +71,12 @@ export function ConnectWallet() {
         <Button
           onClick={() => open()}
           variant="outline"
+          size={buttonSize} // Apply buttonSize
           className="border-accent text-accent hover:bg-accent/10 hover:text-accent group"
         >
-          <Wallet className="mr-2 h-4 w-4 group-hover:animate-pulse-glow" />
+          <Wallet
+            className={`mr-2 ${buttonSize === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} group-hover:animate-pulse-glow`}
+          />
           Connect Wallet
         </Button>
       </motion.div>
@@ -80,19 +87,23 @@ export function ConnectWallet() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button variant="outline" className="flex items-center gap-2 border-accent/70 hover:border-accent">
-            <Avatar className="h-6 w-6">
+          <Button
+            variant="outline"
+            size={buttonSize} // Apply buttonSize
+            className="flex items-center gap-2 border-accent/70 hover:border-accent"
+          >
+            <Avatar className={buttonSize === "sm" ? "h-5 w-5" : "h-6 w-6"}>
               {/* You can use a library for blockies or jazzicons here based on address */}
               <AvatarImage src={`https://effigy.im/a/${address}.svg`} alt={address} />
               <AvatarFallback>{ensName ? ensName.charAt(0) : address.charAt(2)}</AvatarFallback>
             </Avatar>
-            <span>{ensName || truncateAddress(address)}</span>
+            <span className={buttonSize === "sm" ? "text-xs" : ""}>{ensName || truncateAddress(address)}</span>
             {currentChain && (
               <img
                 src={`https://token.metaswap.codefi.network/${currentChain.id}.png`}
                 onError={(e) => (e.currentTarget.style.display = "none")}
                 alt={currentChain.name}
-                className="h-4 w-4 rounded-full"
+                className={`${buttonSize === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} rounded-full`}
               />
             )}
           </Button>
