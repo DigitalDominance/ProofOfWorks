@@ -96,6 +96,10 @@ export function Header() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center">
+          <ConnectWallet />
+          <div className="ml-2">
+            <ThemeSwitch />
+          </div>
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="ml-2">
@@ -103,7 +107,7 @@ export function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] glass-effect overflow-y-auto">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] glass-effect">
               <div className="flex flex-col h-full">
                 <div className="flex justify-between items-center mb-8">
                   <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
@@ -158,10 +162,6 @@ export function Header() {
                       </Link>
                     </SheetClose>
                   ))}
-                  <div className="flex flex-col gap-4 mt-4">
-                    <ConnectWallet />
-                    <ThemeSwitch />
-                  </div>
                 </nav>
                 <div className="mt-auto pt-6 border-t border-border/40">
                   <p className="text-xs text-muted-foreground text-center">

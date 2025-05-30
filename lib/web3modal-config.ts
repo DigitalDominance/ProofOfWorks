@@ -12,15 +12,15 @@ if (!projectId) {
 
 // Define your custom Kaspa EVM chain
 export const kaspaEVMTestnet = {
-  id: 167012,
+  id: 11110,
   name: "Kaspa EVM Testnet",
   nativeCurrency: { name: "Kaspa", symbol: "KAS", decimals: 18 },
   rpcUrls: {
-    default: { http: ["https://rpc.kasplextest.xyz"] },
-    public: { http: ["https://rpc.kasplextest.xyz"] },
+    default: { http: ["https://kaspa-evm-testnet-rpc.example.com"] },
+    public: { http: ["https://kaspa-evm-testnet-rpc.example.com"] },
   },
   blockExplorers: {
-    default: { name: "KaspaExplorer", url: "https://testnet.kaspa.guru" },
+    default: { name: "KaspaExplorer", url: "https://kaspa-evm-testnet-explorer.example.com" },
   },
   testnet: true,
 } as const satisfies Chain
@@ -32,17 +32,12 @@ const metadata = {
   icons: ["https://your-platform-url.com/logo.png"], // Add your logo URL
 }
 
-// Only include Kaspa EVM Testnet for now
-export const chains = [kaspaEVMTestnet] as const
-
-// Create wagmi config with only Kaspa EVM chain
+export const chains = [kaspaEVMTestnet, sepolia] as const
 export const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
   ssr: true, // Important for Next.js
-  enableWalletConnect: true, // Enable WalletConnect
-  defaultChainId: kaspaEVMTestnet.id, // Set Kaspa EVM as default chain
 })
 
 // 3. Create modal
