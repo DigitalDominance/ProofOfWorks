@@ -1,36 +1,35 @@
 // lib/web3modal-config.ts
 
 import { configureChains, createConfig } from "@wagmi/core";
-// └─ Configure Wagmi’s chain settings and clients {{turn1search0}}
+// └─ Wagmi v2+ moved to @wagmi/core; configureChains defines publicClient & webSocketPublicClient {{turn1search0}}
 
 import { publicProvider } from "@wagmi/core/providers/public";
-// └─ The publicProvider now lives under @wagmi/core/providers/public {{turn1search0}}
+// └─ publicProvider now exported from @wagmi/core/providers/public (not from “wagmi/providers/public”) {{turn1search0}}
 
 import { walletConnectProvider } from "@wagmi/core/providers/walletConnect";
-// └─ WalletConnect’s provider is under @wagmi/core/providers/walletConnect {{turn1search3}}
+// └─ walletConnectProvider resides under @wagmi/core/providers/walletConnect {{turn1search3}}
 
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
-// └─ If you need a custom JSON-RPC provider, import from @wagmi/core/providers/jsonRpc {{turn1search9}}
+// └─ jsonRpcProvider from @wagmi/core/providers/jsonRpc for custom chains, if needed {{turn1search9}}
 
 import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum";
-// └─ Web3Modal’s EthereumClient + connectors come from @web3modal/ethereum {{turn0search8}}
+// └─ Web3Modal v2’s EthereumClient, connectors & provider live under @web3modal/ethereum {{turn0search8}}
 
 import type { Chain } from "viem";
-// └─ viem’s Chain type is still used to define custom chains (e.g., Kaspa EVM) {{turn0search0}}
+// └─ viem’s `Chain` interface to define your Kaspa EVM Testnet chain {{turn0search0}}
 
 
-// 1. Ensure the WalletConnect “Project ID” is available at build time
+// 1) Ensure WalletConnect projectId is defined at build time
 export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 if (!projectId) {
-  // If missing, this will fail the build immediately so you know to set it before deployment.
   throw new Error(
-    "Missing NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID—set it in your .env or in Heroku config vars."
+    "Missing NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in environment. Please set it before building."
   );
 }
-// └─ Web3Modal v2 requires a Project ID; throwing here prevents a silent 500 at runtime {{turn0search8}}
+// └─ Web3Modal v2 requires a WalletConnect projectId; throwing on missing prevents runtime 500s {{turn0search8}}
 
 
-// 2. Define a custom Kaspa EVM Testnet chain (replace RPC and explorer URLs as needed)
+// 2) Define your custom Kaspa EVM Testnet chain
 export const kaspaEVMTestnet: Chain = {
   id: 167012,
   name: "Kaspa EVM Testnet",
@@ -48,19 +47,16 @@ export const kaspaEVMTestnet: Chain = {
   },
   testnet: true,
 };
-// └─ All custom chains must satisfy viem’s Chain interface (copied from wagmi docs) {{turn0search0}}
+// └─ All viem `Chain` definitions now go here. JSON-RPC + explorer URLs must be valid. {{turn0search0}}
 
 
-// 3. Configure Wagmi chains and clients (SSR-safe)
+// 3) Configure Wagmi chains & clients (SSR-safe)
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [kaspaEVMTestnet],
   [
-    // Web3Modal’s Wagmi provider that uses WalletConnect V2 under the hood
-    w3mProvider({ projectId }),
-    // Fallback RPC provider that anyone can use—no sign-in required
-    publicProvider(),
-    // If you want to explicitly point to Kaspa’s RPC (redundant here since w3mProvider + publicProvider cover it)
-    jsonRpcProvider({
+    w3mProvider({ projectId }),                // Web3Modal-provided provider using WalletConnect v2 {{turn0search8}}
+    publicProvider(),                           // Fallback public RPC provider for any chain {{turn1search0}}
+    jsonRpcProvider({                           // Explicitly define JSON-RPC if needed (optional)
       rpc: (chain) => {
         if (chain.id === 167012) {
           return { http: "https://rpc.kasplextest.xyz:167012" };
@@ -70,37 +66,40 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     }),
   ]
 );
-// └─ configureChains returns “chains” + “publicClient” + “webSocketPublicClient” for Wagmi v2+ {{turn1search0}}
+// └─ `configureChains` gives us `chains`, `publicClient`, `webSocketPublicClient` for Wagmi v2+ {{turn1search0}}
 
 
-// 4. Create a Wagmi config object
+// 4) Create a Wagmi configuration for React
 export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: w3mConnectors({ projectId, chains }),
   publicClient,
   webSocketPublicClient,
 });
-// └─ createConfig (formerly createClient) wires up Wagmi with React Query and connectors {{turn1search0}}
+// └─ In Wagmi v2, `createClient` was renamed to `createConfig`; connectors come from `w3mConnectors` {{turn1search0}}
 
 
-// 5. Initialize EthereumClient (client-side only)
+// 5) Initialize EthereumClient only in the browser
 let ethereumClient: EthereumClient | undefined = undefined;
 if (typeof window !== "undefined") {
   ethereumClient = new EthereumClient(wagmiConfig, chains);
 }
-// └─ EthereumClient ties Wagmi’s config + chains to Web3Modal; only in browser {{turn0search8}}
+// └─ EthereumClient bundles Wagmi + Web3Modal; must run only on client where `window` exists {{turn0search8}}
 
 
-// 6. Export a helper to initialize Web3Modal on the client
-export function initWeb3Modal() {
+// 6) Export an async function to initialize Web3Modal in a client-side effect
+export async function initWeb3Modal() {
   if (!ethereumClient) {
     console.warn(
-      "🔸 Web3Modal init skipped—ethereumClient is undefined (likely running SSR)."
+      "⚠️ EthereumClient is undefined—Web3Modal initialization skipped (likely SSR)."
     );
     return;
   }
 
-  new (await import("@web3modal/react")).Web3Modal({
+  // Dynamically import Web3Modal’s React component so that no code from "@web3modal/react"
+  // gets evaluated during SSR. `await` here is allowed because this function is `async`.
+  const { Web3Modal } = await import("@web3modal/react");
+  new Web3Modal({
     projectId,
     themeMode: "dark",
     ethereumClient,
@@ -110,4 +109,4 @@ export function initWeb3Modal() {
     },
   });
 }
-// └─ Dynamically import Web3Modal’s React component so it never runs at build/SSR time {{turn0search8}}
+// └─ Marked `async` so that `await import("@web3modal/react")` is valid syntax {{turn0search4turn0search5}}  
