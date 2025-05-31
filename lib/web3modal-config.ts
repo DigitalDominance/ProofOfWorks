@@ -20,7 +20,7 @@ export const kaspaEVMTestnet = {
     public: { http: ["https://rpc.kasplextest.xyz"] },
   },
   blockExplorers: {
-    default: { name: "KaspaExplorer", url: "https://kaspa-evm-testnet-explorer.example.com" }, // Placeholder
+    default: { name: "KaspaExplorer", url: "https://frontend.kasplextest.xyz" }, // Placeholder
   },
   testnet: true,
 } as const satisfies Chain
@@ -36,8 +36,8 @@ if (kaspaEVMTestnet.blockExplorers.default.url.includes("example.com")) {
 const metadata = {
   name: "ProofOfWork Platform",
   description: "On-Chain Hiring & Payroll on Kaspa EVM",
-  url: "https://v0-proof-of-work-frontend.vercel.app", // Updated URL
-  icons: ["https://v0-proof-of-work-frontend.vercel.app/logo.png"], // Updated icon URL (ensure logo.png is in /public)
+  url: "https://pow-frontend-925b729e8cf0.herokuapp.com", // Updated URL
+  icons: ["https://pow-frontend-925b729e8cf0.herokuapp.com/logo.png"], // Updated icon URL (ensure logo.png is in /public)
 }
 
 // Configure chains to use only Kaspa EVM Testnet
