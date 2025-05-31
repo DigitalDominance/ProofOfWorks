@@ -1,11 +1,10 @@
 // lib/web3modal-config.ts
 
-import { createWeb3Modal } from "@web3modal/wagmi/react"
-import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
-import type { Chain } from "viem"
+import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
+import type { Chain } from "viem";
 
 // 1. Get projectId (fallback to empty string so it never throws)
-export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? ""
+export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "";
 
 // Define your custom Kaspa EVM chain
 export const kaspaEVMTestnet: Chain = {
@@ -24,16 +23,16 @@ export const kaspaEVMTestnet: Chain = {
     },
   },
   testnet: true,
-}
+};
 
-export const chains = [kaspaEVMTestnet] as const
+export const chains = [kaspaEVMTestnet] as const;
 
 // (Optional) Add metadata if you like
 const metadata = {
   name: "ProofOfWork Platform",
   description: "On-Chain Hiring & Payroll on Kaspa EVM",
   url: "https://pow-frontend-925b729e8cf0.herokuapp.com",
-}
+};
 
 // 2. Build the wagmiConfig (SSR-safe)
 export const wagmiConfig = defaultWagmiConfig({
@@ -41,7 +40,7 @@ export const wagmiConfig = defaultWagmiConfig({
   projectId,
   metadata,
   ssr: true,
-})
+});
 
 // 3. Only initialize Web3Modal on the client *and* if projectId is non‐empty
 if (typeof window !== "undefined" && projectId) {
@@ -55,9 +54,9 @@ if (typeof window !== "undefined" && projectId) {
       "--w3m-border-radius-master": "0.75rem",
     },
     // enableAnalytics: true // optional
-  })
+  });
 } else if (typeof window !== "undefined") {
   console.warn(
     "⚠️ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is missing; Web3Modal will not be initialized on the client."
-  )
+  );
 }
