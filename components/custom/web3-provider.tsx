@@ -6,12 +6,12 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig, initWeb3Modal } from "@/lib/web3modal-config";
 
-// Create a singleton QueryClient
+// Create a singleton React Query client
 const queryClient = new QueryClient();
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Initialize Web3Modal (client-only)
+    // Initialize Web3Modal only on the client (no SSR)
     initWeb3Modal();
   }, []);
 
