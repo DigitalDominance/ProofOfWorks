@@ -6,12 +6,13 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig, initWeb3Modal } from "@/lib/web3modal-config";
 
+// Create a singleton QueryClient
 const queryClient = new QueryClient();
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // You can catch errors so unhandled rejections don’t appear
-    initWeb3Modal().catch(console.error);
+    // Initialize Web3Modal (client-only)
+    initWeb3Modal();
   }, []);
 
   return (
