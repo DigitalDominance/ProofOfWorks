@@ -14,7 +14,7 @@ import {
   Layers,
   GitBranch,
   Scale,
-  UsersRound,
+  Users2,
   Landmark,
   Handshake,
   Share2,
@@ -108,7 +108,7 @@ export default function LandingPage() {
       href: "/jobs",
     },
     {
-      icon: <UsersRound className="h-10 w-10 text-accent" />,
+      icon: <Users2 className="h-10 w-10 text-accent" />,
       title: "Jurors & DAO Members",
       description: "Contribute to platform integrity and governance.",
       points: [
