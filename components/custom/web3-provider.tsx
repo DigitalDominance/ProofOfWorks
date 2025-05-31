@@ -6,12 +6,12 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig, initWeb3Modal } from "@/lib/web3modal-config";
 
-// Create one shared QueryClient
+// Create a single React Query client
 const queryClient = new QueryClient();
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // This will only run in the browser, after hydration
+    // Only runs on the client after hydration
     initWeb3Modal();
   }, []);
 
